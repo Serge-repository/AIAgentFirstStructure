@@ -6,3 +6,4 @@ node_modules/
 /.github
 /allure-results
 /allure-report
+.playwright-mcp
