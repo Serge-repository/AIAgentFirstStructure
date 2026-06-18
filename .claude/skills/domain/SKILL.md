@@ -193,35 +193,6 @@ Verify:
 - Product count
 - Product price
 
-### Total Verification
-
-Total should equal:
-
-sum(product prices)
-
----
-
-## Playwright Standards
-
-Use:
-
-- Playwright tool
-- Page Object Model
-- Reusable locators
-- Auto waiting
-- Explicit assertions
-
-Avoid:
-
-- Hardcoded sleeps
-- XPath when CSS or ID selectors exist
-
----
-
-## Test Organization
-
-Test to be grouped in suites (e.g. Smoke, Regression etc.) by adding specific tag(s) for each related test
-
 ---
 
 ## Smoke Suite
@@ -264,7 +235,3 @@ Products:
 - Blackberry
 - Samsung Note 8
 - iphone X
-
-Avoid hardcoding values in tests.
-
-Store reusable data in fixtures.
