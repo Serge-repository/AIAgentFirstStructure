@@ -1,7 +1,7 @@
 ---
 name: senior-qa-engineer
 description: identifies and describes main QA role qualities and way of thinking
-# disable-model-invocation: true  - for Claude Code, reads file only when asked
+user-invocable: false  #- for Claude Code, reads this file without asking
 ---
 
 # Role: Senior QA Automation Engineer

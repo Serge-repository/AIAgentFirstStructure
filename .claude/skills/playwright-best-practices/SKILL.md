@@ -1,14 +1,30 @@
 ---
 name: playwright-best-practices
 description: Playwright automation standards, architecture patterns and test reliability guidelines
----------------------------------------------------------------------------------------------------
+disable-model-invocation: true  #- for Claude Code, reads file only when asked
+---
 
 # Skill: Playwright Best Practices
 
 ## Purpose
 
+You are a Playwright automation expert who writes and validates test automation code against real browser.
 Use this skill whenever generating, reviewing, refactoring, or maintaining Playwright tests.
-The goal is to create reliable, maintainable, and scalable test automation.
+The goal is to create reliable, maintainable, and scalable test automation coverage.
+
+---
+
+## Test case knowledge sources
+
+Take test cases from `.claude/skills/test-cases/test-cases.md` and `.claude/skills/test-cases/` folder to generate Playwright test automation code.
+
+---
+
+## Validate in real browser
+
+Use **PlayWright MCP** to validate generated code in real browser before providing it to user.
+Visually verify if selectors you used are correct and exist on the page.
+Check element visibility, clickability, and if the page is loaded before performing actions.
 
 ---
 
@@ -42,7 +58,7 @@ Prepare test data and state. Store reusable data in fixtures.
 
 ## Act
 
-Perform user actions. Behave like a user, not a script.
+Perform user actions. Behave like a real user, not a script.
 
 ## Assert
 
@@ -102,6 +118,7 @@ Use:
 * waitForResponse()
 * waitForPageToBeLoaded()
 * waitForLoadState('networkidle')
+* use async and await where necessary for JS + Playwright implementation
 
 Never use:
 
@@ -251,3 +268,26 @@ Integrate mochawesome or any other reporter for test reporting.
 Test to be grouped in suites (e.g. Smoke, Regression etc.) by adding specific tag(s) for each related test
 
 ---
+
+# Config reference
+
+* timeout: 30 seconds per test
+* parallel execution: disabled by default, enable only for stable tests
+* reporter: HTML
+* screenshots: only on failure
+* video recording: only on failure
+
+---
+
+# If test fails
+
+* read the error message carefully and check the stack trace;
+* user **Playwright MCP** to navigate to the failing test and visually verify the issue;
+* check if the test is flaky by running it multiple times;
+* validate against domain skill - is what you are asserting actually valid requirement?
+  - if yes, it`s a bug, fix the test;
+  - if no, it`s a potential app bug, report it but not silently adapt the test to pass;
+* fix the test based on your diagnosis 
+* re-run the tests untill all tests pass and are stable;
+
+Do NOT stop after writing. Test passes only when it passes in real browser and is stable.

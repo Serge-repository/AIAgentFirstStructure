@@ -1,7 +1,7 @@
 ---
 name: domain
 description: product domain overview in terms of testing flow and tests preparation
-# disable-model-invocation: true  - for Claude Code, reads file only when asked
+disable-model-invocation: true  #- for Claude Code, reads file only when asked
 ---
 
 # Skill name: Rahul Shetty Academy Training Shop
