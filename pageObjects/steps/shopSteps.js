@@ -1,8 +1,10 @@
 const selectors = require('../selectors/shopSelectors');
+const GeneralSteps = require('./GeneralSteps');
 
 class ShopSteps {
   constructor(page) {
     this.page = page;
+    this.generalSteps = new GeneralSteps(page);
   }
 
   async addProductToCart(productName) {

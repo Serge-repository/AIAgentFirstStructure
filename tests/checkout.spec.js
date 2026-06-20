@@ -1,4 +1,4 @@
-const { test, expect } = require('../fixtures/fixtures');
+const { test } = require('../fixtures/fixtures');
 
 test.describe('Checkout and Purchase', () => {
   test('TC-002: user can complete purchase with single product', async ({ loginSteps, shopSteps, cartSteps, purchaseSteps, testData }) => {
@@ -14,10 +14,7 @@ test.describe('Checkout and Purchase', () => {
     await purchaseSteps.acceptTerms();
     await purchaseSteps.purchase();
 
-    const successMessage = await purchaseSteps.getSuccessMessage();
-    await expect(successMessage).toBeVisible();
-    await expect(successMessage).toContainText('Success');
-    await expect(successMessage).toContainText('Thank you');
+    await purchaseSteps.verifyPurchaseSuccess();
   });
 
   test('TC-003: user can add multiple products and verify them in cart', async ({ loginSteps, shopSteps, cartSteps, testData }) => {
@@ -32,8 +29,6 @@ test.describe('Checkout and Purchase', () => {
 
     await shopSteps.goToCart();
 
-    const productNames = await cartSteps.getProductNames();
-    expect(productNames).toEqual(expect.arrayContaining(products));
-    expect(productNames.length).toBe(products.length);
+    await cartSteps.verifyProductsInCart(products);
   });
 });

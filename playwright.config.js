@@ -7,7 +7,7 @@ const config = {
   expect: {
     timeout: 5000,
   },
-  reporter: [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
+  reporter: [['list'], ['allure-playwright', { outputFolder: 'allure-results' }]],
   use: {
     actionTimeout: 0,
     trace: 'on-first-retry',

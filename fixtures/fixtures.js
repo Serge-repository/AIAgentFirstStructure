@@ -1,4 +1,4 @@
-const { test: base, expect } = require('@playwright/test');
+const { test: base } = require('@playwright/test');
 const LoginSteps = require('../pageObjects/steps/loginSteps');
 const ShopSteps = require('../pageObjects/steps/shopSteps');
 const CartSteps = require('../pageObjects/steps/cartSteps');
@@ -23,4 +23,4 @@ const test = base.extend({
   },
 });
 
-module.exports = { test, expect };
+module.exports = { test };

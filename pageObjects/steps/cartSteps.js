@@ -1,8 +1,10 @@
 const selectors = require('../selectors/cartSelectors');
+const GeneralSteps = require('./GeneralSteps');
 
 class CartSteps {
   constructor(page) {
     this.page = page;
+    this.generalSteps = new GeneralSteps(page);
   }
 
   async hasProduct(productName) {
@@ -23,6 +25,16 @@ class CartSteps {
   async proceedToCheckout() {
     await this.page.locator(selectors.checkoutButton).click();
     await this.page.waitForLoadState('networkidle');
+  }
+
+  async verifyProductInCart(productName) {
+    await this.generalSteps.assertTrue(await this.hasProduct(productName));
+  }
+
+  async verifyProductsInCart(expectedProducts) {
+    const productNames = await this.getProductNames();
+    await this.generalSteps.assertArrayContains(productNames, expectedProducts);
+    await this.generalSteps.assertLength(productNames, expectedProducts.length);
   }
 }
 

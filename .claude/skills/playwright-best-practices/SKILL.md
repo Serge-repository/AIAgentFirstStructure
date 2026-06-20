@@ -87,13 +87,38 @@ Page Objects:
 * locators stored in separate files per each page in .js format.
 * page actions stored in separate files per each page in .js format.
 * each test contain at least one assertion.
-* reusable assertions can be stored in GeneralPage.js file.
+* reusable assertions stored in `pageObjects/steps/GeneralSteps.js`.
 * reusable frames should be stored in separate folder and per-page .js files.
+
+Assertion flow:
+```
+GeneralSteps (assertion methods) → Steps files (verify* methods) → Spec files (business flow only)
+```
+
+Steps files import GeneralSteps, accept it via constructor, and call its methods inside `verify*` methods.
+Spec files never import `expect` or use `GeneralSteps` directly — they call step methods that assert internally.
 
 Test .spec .js files:
 
 * contain business flow only
 * do not contain selectors
+* do not contain direct `expect` calls
+
+Bad:
+```javascript
+const { test, expect } = require('../fixtures/fixtures');
+test('...', async ({ cartSteps }) => {
+  expect(await cartSteps.hasProduct(product)).toBeTruthy();
+});
+```
+
+Good:
+```javascript
+const { test } = require('../fixtures/fixtures');
+test('...', async ({ cartSteps }) => {
+  await cartSteps.verifyProductInCart(product);
+});
+```
 
 Bad:
 ```javascript
@@ -144,6 +169,10 @@ await expect(successMessage).toBeVisible();
 
 Assertions must validate business outcomes.
 
+All assertion logic lives in `pageObjects/steps/GeneralSteps.js`. It wraps Playwright's `expect` into reusable methods (`assertVisible`, `assertContainsText`, `assertTrue`, `assertArrayContains`, `assertLength`, etc.).
+
+Steps files compose these methods into `verify*` methods that represent business-level checks (e.g. `verifyProductInCart`, `verifyPurchaseSuccess`). Spec files call only these `verify*` methods — they never import or call `expect` directly.
+
 ---
 
 # Test Independence
@@ -162,7 +191,7 @@ Each test should be executable alone.
 
 # Test Data
 
-Prefer reusable fixtures.
+Prefer reusable fixtures stored in `fixtures/testData.js`.
 
 Store:
 * users
@@ -170,19 +199,41 @@ Store:
 * addresses
 * environments
 * credentials
-inside fixtures or dedicated test data files.
 
-Avoid hardcoded values.
+Avoid hardcoded values in spec or step files.
 
 ---
 
 # Fixtures
 
+All fixtures are stored in `fixtures/fixtures.js`.
+
 Use Playwright fixtures for:
-* page objects
+* page objects (Steps)
 * authentication
 * test data
 * API setup
+
+Each Steps class instantiates `GeneralSteps` internally — no fixture needed for it.
+
+```javascript
+const { test: base } = require('@playwright/test');
+const LoginSteps = require('../pageObjects/steps/loginSteps');
+const testData = require('./testData');
+
+const test = base.extend({
+  loginSteps: async ({ page }, use) => {
+    await use(new LoginSteps(page));
+  },
+  // ...
+});
+
+module.exports = { test };
+```
+
+## Test Data
+
+Test data files stored in `fixtures/testData.js`. Reusable data sets (credentials, products, countries, etc.) are exported as a single object and injected via the `testData` fixture.
 
 ---
 
@@ -295,3 +346,16 @@ Test to be grouped in suites (e.g. Smoke, Regression etc.) by adding specific ta
 * re-run the tests untill all tests pass and are stable;
 
 Do NOT stop after writing. Test passes only when it passes in real browser and is stable.
+
+---
+
+# Report Generation
+
+After every test run, generate and open the Allure report:
+
+```bash
+allure generate allure-results --clean -o allure-report
+allure open allure-report
+```
+
+The `allure open` command starts a local web server and opens the report in your default browser automatically.

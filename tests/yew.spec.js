@@ -1,4 +1,4 @@
-const { test, expect } = require('../fixtures/fixtures');
+const { test } = require('../fixtures/fixtures');
 
 test('login, add iPhone X to cart, and confirm it is added', async ({ loginSteps, shopSteps, cartSteps, testData }) => {
   const { username, password } = testData.credentials;
@@ -8,5 +8,5 @@ test('login, add iPhone X to cart, and confirm it is added', async ({ loginSteps
   await shopSteps.addProductToCart(product);
   await shopSteps.goToCart();
 
-  await expect(await cartSteps.hasProduct(product)).toBeTruthy();
+  await cartSteps.verifyProductInCart(product);
 });

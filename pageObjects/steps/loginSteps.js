@@ -1,8 +1,10 @@
 const selectors = require('../selectors/loginSelectors');
+const GeneralSteps = require('./GeneralSteps');
 
 class LoginSteps {
   constructor(page) {
     this.page = page;
+    this.generalSteps = new GeneralSteps(page);
   }
 
   async loginAs(username, password) {

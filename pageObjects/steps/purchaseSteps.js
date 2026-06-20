@@ -1,20 +1,18 @@
 const selectors = require('../selectors/purchaseSelectors');
+const GeneralSteps = require('./GeneralSteps');
 
 class PurchaseSteps {
   constructor(page) {
     this.page = page;
+    this.generalSteps = new GeneralSteps(page);
   }
 
   async selectCountry(country) {
     const partial = country.substring(0, 3);
     await this.page.locator(selectors.countryInput).pressSequentially(partial, { delay: 100 });
-    await this.page.waitForTimeout(1500);
-    await this.page.locator(selectors.suggestionLink(country)).first().click({ force: true });
-    await this.page.waitForTimeout(500);
-    await this.page.evaluate(() => {
-      const el = document.querySelector('div.suggestions');
-      if (el) el.style.display = 'none';
-    });
+    await this.page.locator(selectors.suggestionLink(country)).first().waitFor({ state: 'visible', timeout: 10000 });
+    await this.page.locator(selectors.suggestionLink(country)).first().click();
+    await this.page.waitForLoadState('networkidle');
   }
 
   async acceptTerms() {
@@ -26,8 +24,11 @@ class PurchaseSteps {
     await this.page.waitForLoadState('networkidle');
   }
 
-  async getSuccessMessage() {
-    return this.page.locator(selectors.successAlert);
+  async verifyPurchaseSuccess() {
+    const successMessage = this.page.locator(selectors.successAlert);
+    await this.generalSteps.assertVisible(successMessage);
+    await this.generalSteps.assertContainsText(successMessage, 'Success');
+    await this.generalSteps.assertContainsText(successMessage, 'Thank you');
   }
 }
 
