@@ -30,12 +30,11 @@ npx playwright test tests/yew.spec.js --headed  # single file in headed mode
 
 No local server required — tests hit [rahulshettyacademy.com](https://rahulshettyacademy.com) (public demo app).
 
-## Quirks
+## Important notes
 
 - **CommonJS** (`require`/`module.exports`), not ESM.
-- **Hardcoded credentials** in `tests/yew.spec.js:6-7`. Do not commit secrets; extract to env vars or a `.env` file if this becomes shared infrastructure.
 - **Default browser** is Chromium (per Playwright default).
-- **Reporters**: `list` (stdout) + `html` (written to `playwright-report/`, never auto-opens).
+- **Reporters**: allure
 - **On failure**: trace (first retry), screenshot, video.
 
 ## Local-only config
@@ -43,3 +42,8 @@ No local server required — tests hit [rahulshettyacademy.com](https://rahulshe
 `./.github/agents/UI Agent.agent.md` defines an OpenCode UI automation agent for this repo. It is gitignored (`/.github` in `.gitignore`), so it will not be committed and work only locally.
 
 No CI configured yet.
+
+## Reporting tool
+
+Always use allure after every test run.
+If Allure is not installed for this project - download and install it.

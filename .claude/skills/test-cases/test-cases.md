@@ -276,8 +276,8 @@ disable-model-invocation: true  #- for Claude Code, reads file only when asked
 | TC-ID | Status | Notes |
 |-------|--------|-------|
 | TC-001 | ✅ Automated (`yew.spec.js`) | Covers login + add + verify |
-| TC-002 | ❌ Not automated | Needs purchase page objects |
-| TC-003 | ❌ Not automated | Needs multi-product handling |
+| TC-002 | ✅ Automated (`checkout.spec.js`) | Purchase flow with country, terms, success |
+| TC-003 | ✅ Automated (`checkout.spec.js`) | Multi-product add + cart verification |
 | TC-004 | ❌ Not automated | Full multi-product flow |
 | TC-005 | ❌ Not automated | Needs price extraction |
 | TC-006 | ❌ Not automated | Needs country autocomplete locator |

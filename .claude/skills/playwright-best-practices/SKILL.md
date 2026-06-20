@@ -88,7 +88,7 @@ Page Objects:
 * page actions stored in separate files per each page in .js format.
 * each test contain at least one assertion.
 * reusable assertions can be stored in GeneralPage.js file.
-* reusable frames can be stored in separate folder and per-page .js files.
+* reusable frames should be stored in separate folder and per-page .js files.
 
 Test .spec .js files:
 
@@ -194,7 +194,7 @@ Use UI login only when:
 * login functionality is under test
 * authentication flow must be validated
 
-Avoid repeating login steps in every test.
+Avoid repeating login steps in every test by using session mechanism or API login.
 
 ---
 
@@ -233,11 +233,14 @@ Prefer:
 When reviewing Playwright code:
 
 Check for:
-* duplicated locators
-* duplicated business logic
-* missing assertions
-* hardcoded test data
-* poor test and method names
+* duplicated locators;
+* duplicated business logic;
+* missing assertions;
+* hardcoded test data;
+* poor test and method names;
+* unused methods or variables;
+
+Instantly fix findings mentioned above. Do not approve code with these issues.
 
 ---
 
@@ -259,7 +262,8 @@ test1
 
 # Required Deliverables
 
-Integrate mochawesome or any other reporter for test reporting.
+ Integrate allure reporting tool for test reporting.
+ If such tool is not installed - download and install it, then configure it for the project.
 
 ---
 
@@ -273,7 +277,7 @@ Test to be grouped in suites (e.g. Smoke, Regression etc.) by adding specific ta
 
 * timeout: 30 seconds per test
 * parallel execution: disabled by default, enable only for stable tests
-* reporter: HTML
+* reporter: allure
 * screenshots: only on failure
 * video recording: only on failure
 
@@ -285,8 +289,8 @@ Test to be grouped in suites (e.g. Smoke, Regression etc.) by adding specific ta
 * user **Playwright MCP** to navigate to the failing test and visually verify the issue;
 * check if the test is flaky by running it multiple times;
 * validate against domain skill - is what you are asserting actually valid requirement?
-  - if yes, it`s a bug, fix the test;
-  - if no, it`s a potential app bug, report it but not silently adapt the test to pass;
+  - if yes, it is a bug, fix the test;
+  - if no, it is a potential app bug, report it to the `.claude\skills\test-cases\test-cases.md` file but not silently adapt the test to pass;
 * fix the test based on your diagnosis 
 * re-run the tests untill all tests pass and are stable;
 
