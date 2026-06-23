@@ -7,10 +7,10 @@ class CartSteps {
     this.generalSteps = new GeneralSteps(page);
   }
 
-  async hasProduct(productName) {
-    const productLink = this.page.locator(selectors.cartProductNameLink, { hasText: productName });
-    return (await productLink.count()) > 0;
-  }
+  // async hasProduct(productName) {
+  //   const productLink = this.page.locator(selectors.cartProductNameLink, { hasText: productName });
+  //   return (await productLink.count()) > 0;
+  // }
 
   async getProductNames() {
     const links = this.page.locator(selectors.allProductNameLinks);
@@ -28,7 +28,9 @@ class CartSteps {
   }
 
   async verifyProductInCart(productName) {
-    await this.generalSteps.assertTrue(await this.hasProduct(productName));
+    const productLink = this.page.locator(selectors.cartProductNameLink, {hasText: productName});
+    let productExists = (await productLink.count()) > 0;
+    await this.generalSteps.assertTrue(productExists);
   }
 
   async verifyProductsInCart(expectedProducts) {

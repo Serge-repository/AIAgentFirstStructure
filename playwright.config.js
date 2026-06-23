@@ -8,8 +8,9 @@ const config = {
     timeout: 5000,
   },
   reporter: [['list'], ['allure-playwright', { outputFolder: 'allure-results' }]],
+  retries: 1,
   use: {
-    actionTimeout: 0,
+    actionTimeout: 5000,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',

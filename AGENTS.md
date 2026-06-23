@@ -30,6 +30,10 @@ npx playwright test tests/yew.spec.js --headed  # single file in headed mode
 
 No local server required — tests hit [rahulshettyacademy.com](https://rahulshettyacademy.com) (public demo app).
 
+## Refactor tests
+
+Refer to `.claude\skills\playwright-best-practices\SKILL.md` to understand how to refactor this test automation framework code and best practices instructions.
+
 ## Important notes
 
 - **CommonJS** (`require`/`module.exports`), not ESM.

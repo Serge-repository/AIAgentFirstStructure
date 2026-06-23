@@ -3,7 +3,8 @@ node_modules/
 /playwright-report/
 /playwright/.cache/
 /session.json
-/.github
+/.github/agents/
 /allure-results
 /allure-report
+/fixtures/credentials.js
 .playwright-mcp
