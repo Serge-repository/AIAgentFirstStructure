@@ -19,7 +19,6 @@ jobs:
       contents: read
       pages: write
       id-token: write
-      administration: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -37,8 +36,6 @@ jobs:
         run: npm run allure:generate
       - if: always()
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - if: always()
         uses: actions/upload-pages-artifact@v3
         with:
