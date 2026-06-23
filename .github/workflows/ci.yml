@@ -43,3 +43,5 @@ jobs:
       - id: deployment
         if: always()
         uses: actions/deploy-pages@v4
+      - if: always()
+        run: echo "## ✅ Allure Report Deployed" >> $GITHUB_STEP_SUMMARY; echo "" >> $GITHUB_STEP_SUMMARY; echo "🔗 [Open Allure Report](${{ steps.deployment.outputs.page_url }})" >> $GITHUB_STEP_SUMMARY
