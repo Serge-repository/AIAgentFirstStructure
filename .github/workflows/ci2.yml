@@ -1,0 +1,130 @@
+name: CI - Regression Tests
+
+on:
+  push:
+    branches: [main]
+
+  # Нічні запуски (вимкнено, бо проект навчальний).
+  # Щоб увімкнути: розкоментуйте 2 рядки нижче. Час у UTC.
+  # schedule:
+  #   - cron: '0 1 * * *'
+
+  workflow_dispatch:
+    inputs:
+      grep:
+        description: 'Тег або назва тесту (напр. @smoke)'
+        type: string
+        default: ''
+      spec:
+        description: 'Файл спеку (напр. tests/login.spec.js)'
+        type: string
+        default: ''
+      deploy_report:
+        description: 'Опублікувати Allure-звіт'
+        type: boolean
+        default: true
+
+# Група pages спільна з ci.yml: два воркфлоу не деплоять Pages одночасно.
+# 1 запуск іде, наступний чекає (cancel-in-progress: false).
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read   # checkout репозиторію
+      pages: write     # деплой у GitHub Pages
+      id-token: write  # потрібно для actions/deploy-pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        env:
+          TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          GREP: ${{ inputs.grep }}
+          SPEC: ${{ inputs.spec }}
+        run: |
+          ARGS=()
+          if [ -n "$SPEC" ]; then ARGS+=("$SPEC"); fi
+          if [ -n "$GREP" ]; then
+            ARGS+=(--grep "$GREP")
+          elif [ -z "$SPEC" ]; then
+            ARGS+=(--grep "@regression")
+          fi
+          npx playwright test "${ARGS[@]}"
+
+      # ---------- Allure: історія + генерація + публікація ----------
+
+      - name: Restore Allure history (best effort)
+        if: ${{ !cancelled() }}
+        run: |
+          OWNER="${GITHUB_REPOSITORY_OWNER,,}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          mkdir -p allure-results/history
+          if curl -fsSL "https://${OWNER}.github.io/${REPO}/history/history.json" \
+               -o allure-results/history/history.json; then
+            echo "Allure history restored"
+          else
+            rm -rf allure-results/history
+            echo "No previous Allure history (first run)"
+          fi
+
+      - name: Generate Allure report
+        if: ${{ !cancelled() }}
+        run: |
+          mkdir -p allure-results
+          npm install -g allure-commandline@2.46.1
+          npm run allure:generate
+
+      - name: Upload Allure report artifact
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report
+          retention-days: 14
+
+      - name: Upload Playwright artifacts (traces, videos, screenshots)
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            test-results
+            allure-results
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Configure Pages
+        if: ${{ !cancelled() && (github.event_name != 'workflow_dispatch' || inputs.deploy_report) }}
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        if: ${{ !cancelled() && (github.event_name != 'workflow_dispatch' || inputs.deploy_report) }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-report
+
+      - name: Deploy Allure report to GitHub Pages
+        id: deployment
+        if: ${{ !cancelled() && (github.event_name != 'workflow_dispatch' || inputs.deploy_report) }}
+        uses: actions/deploy-pages@v4
+
+      - name: Add report link to job summary
+        if: ${{ !cancelled() && steps.deployment.outcome == 'success' }}
+        run: echo "🔗 [Open Allure Report](${{ steps.deployment.outputs.page_url }})" >> "$GITHUB_STEP_SUMMARY"
